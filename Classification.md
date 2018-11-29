@@ -1,15 +1,15 @@
-Classification
+# Classification
 
 ### make_classification
 
-- n_features: 독립 변수의 수
-- n_classes: 종속 변수의 클래스 수
-- n_clusters_per_class: 클래스 당 클러스터 수 (default: 2)
-- n_informative: 독립 변수 중 종속 변수와 상관 관계가 있는 성분의 수
-- n_redundant: 독립 변수 중 다른 독립 변수의 선형 조합으로 나타내는 성분의 수
-- weights: 각 클래스에 할당된 표본 수
+- `n_features`: 독립 변수의 수 (default: 20)
+- `n_classes`: 종속 변수의 클래스 수 (default: 2)
+- `n_clusters_per_class`: 클래스 당 클러스터 수 (default: 2)
+- `n_informative`: 독립 변수 중 종속 변수와 상관 관계가 있는 성분의 수 (default: 2)
+- `n_redundant`: 독립 변수 중 다른 독립 변수의 선형 조합으로 나타내는 성분의 수 (default: 2)
+- `weights`: 각 클래스에 할당된 표본 수
 
-unbalanced case: 두 클래스의 데이터 수가 비슷하지 않고, 한 클래스의 데이터 수가 크게 작거나 많은 경우이다. (희귀병)
+unbalanced case: 두 클래스의 데이터 수가 비슷하지 않고, 한 클래스의 데이터 수가 크게 작거나 많은 경우이다. (ex 희귀병)
 희귀병을 나타내는 데이터, 차트, 엑스레이 사진들은 적다. 정상인은 많다.
 우리가 생각하는 classification의 결과가 나쁘게 나올 수 있다.
 내가 100개를 예측했는데 맞춘 갯수 (분류 결과의 성능) - 분류가 잘됐는지, 잘 안됐는지
@@ -18,12 +18,16 @@ unbalanced case에서는 위와 같은 성능 평가가 나쁘게 나올 수 있
 
 클래스가 3개 이상 - 다중 classification
 
+
+
 ### make_blobs
 
 - clustering을 평가할 때 쓴다.
 - 뭉쳐져 있는 데이터를 만드는 함수
 - make_blobs(n_feature=2, centers=3)
 - 피쳐의 개수 2개(x축, y축), 모여있는 집단 3개
+
+
 
 ### make_gaussian_quantiles
 
@@ -33,7 +37,7 @@ unbalanced case에서는 위와 같은 성능 평가가 나쁘게 나올 수 있
 
 
 
-분류 모형
+# 분류 모형
 
 분류(classification)는 독립 변수 값이 주어졌을 때 그 독립 변수 값과 가장 연관성이 큰 종속변수 카테고리(클래스)를 계산하는 문제이다. 현실적인 문제로 바꾸어 말하면 어떤 표본에 대한 데이터가 주어졌을 때 그 표본이 어떤 카테고리 혹은 클래스에 알아내는 문제이기도 하다. 선택해야 할 카테고리 혹은 클래스가 미리 주어졌다는 점에서 보기가 주어진 시험 문제를 푸는 것과 비슷하다고 말할 수 있다.
 
@@ -44,15 +48,40 @@ unbalanced case에서는 위와 같은 성능 평가가 나쁘게 나올 수 있
 
 
 
+### 분류 모형의 종류
+
+분류 문제를 푸는 방법은 크게 두 가지로 나눌 수 있다. 하나는 주어진 데이터를 카테고리에 따라 서로 다른 영역으로 나누는 경계면(decision boundary)을 찾아낸 다음 이 경계면으로부터 주어진 데이터가 어느 위치에 있는지를 계산하는 판별함수(discriminant function)를 이용하는 **판별함수 모형**이고 또 다른 하나는 주어진 데이터에 대해(conditionally) 각 카테고리 혹은 클래스가 정답일 조건부확률(conditional probability)를 계산하는 **확률적 모형**이다. 조건부확률 기반 방법은 조건부확률을 계산하는 방법에 따라 직접 조건부확률 함수를 추정하는 **확률적 판별(discriminative) 모형**과 베이즈 정리를 사용하는 **확률적 생성(generative) 모형**으로 나누어진다.
+
+| 모형                                      | 방법론                               |
+| ----------------------------------------- | ------------------------------------ |
+| Linear/Quadratic Discriminant Analysis    | 확률적 생성(generative) 모형         |
+| 나이브 베이지안(Naive Bayes)              | 확률적 생성(generative) 모형         |
+| 로지스틱 회귀(Logistic Regression)        | 확률적 판별(discriminative) 모형     |
+| 의사결정나무(Decision Tree)               | 확률적 판별(discriminative) 모형     |
+| 퍼셉트론(Perceptron)                      | 판별함수(discriminant function) 모형 |
+| 서포트 벡터 머신 (Support Vector Machine) | 판별함수(discriminant function) 모형 |
+| 신경망 (Neural Network)                   | 판별함수(discriminant function)모형  |
+
+
+
 ### 조건부 확률 방법 = 확률론적인 방법
 
+출력 데이터 $y$가 $K$개의 클래스 $1, \cdots, K$ 중의 하나의 값을 가진다고 가정하자. 확률적 모형은 다음과 같은 순서로 $x$에 대한 클래스를 예측한다.
+
+(1) 입력 $x$가 주어졌을 때 $y$가 클래스 $k$가 될 확률 $p(y=k \mid x)$를 모두 계산하고,
 $$
 \begin{eqnarray}
 P_1 &=& P(y=1 \mid x ) \\
 \vdots & & \vdots \\
 P_K &=& P(y=K \mid x )\\
-\end{eqnarray}
+\end{eqnarray}`predict_proba`
 $$
+
+(2) 다음으로 가장 확률이 큰  클래스를 선택하는 방법이다.
+$$
+y = \arg\max_{k} p(y=k \mid x)
+$$
+
 
 `predict_proba`
 
@@ -138,7 +167,7 @@ $K$개의 클래스가 존재하면 $K$개의 문제만 풀면 된다.
 
 
 
-## 분류 성능 평가
+# 분류 성능 평가
 
 분류 문제는 회귀 분석과 달리 다양한 성능 평가 기준이 필요하다.
 
