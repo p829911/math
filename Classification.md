@@ -180,4 +180,72 @@ $K$개의 클래스가 존재하면 $K$개의 문제만 풀면 된다.
 
 분류 문제는 회귀 분석과 달리 다양한 성능 평가 기준이 필요하다.
 
+|                  | 사기 거래라고 예측 | 정상 거래라고 예측 |
+| ---------------- | ------------------ | ------------------ |
+| 실제로 사기 거래 | True Positive      | False Negative     |
+| 실제로 정상 거래 | False Positive     | True Negative      |
+
+
+
+### 평가 점수
+
+**Accuracy 정확도**
+
+- 전체 샘플 중 맞게 예측한 샘플 수의 비율
+- 모형 트레이닝 즉 최적화에서 목적함수로 사용
+
+$$
+\text{accuracy} = \dfrac{\text{TP} + \text{TN}}{\text{TP}+\text{TN}+\text{FP}+\text{FN}}
+$$
+
+**Precision 정밀도**
+
+- Positive 클래스에 속한다고 출력한 샘플 중 실제로 Positive 클래스에 속하는 샘플 수의 비율
+- FDS의 경우, 사기 거래라고 판단한 거래 중 실제 사기 거래의 비율, 유죄율
+
+$$
+\text{precision} = \dfrac{\text{TP}}{\text{TP} + \text{FN}}
+$$
+
+precision을 높이는 가장 쉬운 방법 Threshold를 0보다 높게 만드는 것이다.
+$$
+f(x) = 0 \rightarrow f(x) = 10
+$$
+
+
+**Recall 재현율**
+
+- 실제 Positive 클래스에 속한 샘플 중에 Positive 클래스에 속한다고 출력한 표본의 수
+- FDS의 경우, 실제 사기 거래 중에서 실제 사기 거래라고 예측한 거래의 비율, 검거율
+- TPR(true positive rate)
+- sensitivity(민감도)
+
+$$
+\text{recall} = \dfrac{\text{TP}}{\text{TP} + \text{FN}}
+$$
+
+
+
+precision과 recall을 동시에 높이면 좋지만, 대체적으로 정밀도를 높이면 재현율이 떨어지고 재현율을 높이면 정밀도는 떨어진다.
+
+
+
+**Fall-Out 위양성율**
+
+- 실제 Positive 클래스에 속하지 않는 샘플 중에 Positive 클래스에 속한다고 출력한 표본의 수
+- FDS의 경우, 실제 정상 거래 중에서 FDS가 사기 거래라고 예측한 거래의 비율, 원죄율
+- FPR(False positive rate)
+- specificity(특이도) = 1 - fall-out
+
+$$
+\text{fallout} = \dfrac{\text{FP}}{\text{FP} + \text{TN}}
+$$
+
+위양성율이 올라가면 재현율도 올라간다.
+
+
+
+### ROC 커브
+
+- Receiver Operator Characteristic
 
