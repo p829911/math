@@ -204,14 +204,13 @@ $$
 - FDS의 경우, 사기 거래라고 판단한 거래 중 실제 사기 거래의 비율, 유죄율
 
 $$
-\text{precision} = \dfrac{\text{TP}}{\text{TP} + \text{FN}}
+\text{precision} = \dfrac{\text{TP}}{\text{TP} + \text{FP}}
 $$
 
 precision을 높이는 가장 쉬운 방법 Threshold를 0보다 높게 만드는 것이다.
 $$
 f(x) = 0 \rightarrow f(x) = 10
 $$
-
 
 **Recall 재현율**
 
@@ -245,7 +244,38 @@ $$
 
 
 
+### F (beta) score
+
+- 정밀도(precision)과 재현율(Recall)의 가중 조화 평균
+  $$
+  F_\beta = (1 + \beta^2)(\text{precision}\times\text{recall})\,/\,(\beta^2\text{precision} + \text{recall})
+  $$
+
+- F1 score
+
+  - beta = 1
+
+  $$
+  F_1 = 2 \cdot \text{precision} \cdot \text{recall}\, / \,(\text{precision} + \text{recall})
+  $$
+
+
+
+
+위에서 설명한 각종 평가 점수들은 서로 밀접한 관계를 맺고 있다. 예를 들어
+
+- 재현율(recall)과 위양성률(fall-out)은 양의 상관 관계가 있다.
+- 정밀도(precision)와 재현율(recall)은 대략적으로 음의 상관 관계가 있다.
+
+재현율을 높이기 위해서는 양성으로 판단하는 기준(threshold)을 낮추어 약간의 증거만 있어도 양성으로 판단하도록 하면 된다. 그러나 이렇게 되면 음성임에도 양성으로 판단되는 표본 데이터가 같이 증가하게 되어 위양성율이 동시에 증가한다. 반대로 위양성율을 낮추기 위해 양성을 판단하는 기준을 엄격하게 두게 되면 증거 부족으로 음성 판단을 받는 표본 데이터의 수가 같이 증가하므로 재현율이 떨어진다.
+
+정밀도의 경우에는 재현율과 위양성률처럼 정확한 상관 관계는 아니지만 대략적으로 음의 상관 관계를 가진다. 즉 정밀도를 높이기 위해 판단 기준을 엄격하게 할수록 재현율이나 위양성율이 감소하는 경향을 띤다.
+
+
+
 ### ROC 커브
 
-- Receiver Operator Characteristic
+- Receiver Operator Characteristic 커브는 클래스 판별 기준값의 변화에 따른 위양성률(fall-out)과 재현율(recall)의 변화를 시각화한 것이다.
+- 모든 이진 분류 모형은 판별 평면으로부터의 거리에 해당하는 판별 함수(discriminant function)를 가지며 판별 함수 값이 음수이면 0인 클래스, 양수이면 1인 클래스에 해당한다고 판별한다. 즉 0 이 클래스 판별 기준값이 된다. ROC 커브는 이 클래스 판별 기준값이 달라진다면 판별 결과가 어떻게 달라지는지를 표현한 것이다.
+- Scikit-Learn 의 Classification 클래스는 다음처럼 판별 함수 값을 계산하는 `decision_function` 메서드를 제공한다. 다음 표는 분류 문제를 풀고 `decision_function` 메서드를 이용하여 모든 표본 데이터에 대해 판별 함수 값을 계산한 다음 계산된 판별 함수 값이 가장 큰 데이터부터 가장 작은 데이터 순서로 정렬한 것이다.
 
