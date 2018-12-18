@@ -262,6 +262,7 @@ $$
 
 
 
+
 위에서 설명한 각종 평가 점수들은 서로 밀접한 관계를 맺고 있다. 예를 들어
 
 - 재현율(recall)과 위양성률(fall-out)은 양의 상관 관계가 있다.
@@ -278,4 +279,74 @@ $$
 - Receiver Operator Characteristic 커브는 클래스 판별 기준값의 변화에 따른 위양성률(fall-out)과 재현율(recall)의 변화를 시각화한 것이다.
 - 모든 이진 분류 모형은 판별 평면으로부터의 거리에 해당하는 판별 함수(discriminant function)를 가지며 판별 함수 값이 음수이면 0인 클래스, 양수이면 1인 클래스에 해당한다고 판별한다. 즉 0 이 클래스 판별 기준값이 된다. ROC 커브는 이 클래스 판별 기준값이 달라진다면 판별 결과가 어떻게 달라지는지를 표현한 것이다.
 - Scikit-Learn 의 Classification 클래스는 다음처럼 판별 함수 값을 계산하는 `decision_function` 메서드를 제공한다. 다음 표는 분류 문제를 풀고 `decision_function` 메서드를 이용하여 모든 표본 데이터에 대해 판별 함수 값을 계산한 다음 계산된 판별 함수 값이 가장 큰 데이터부터 가장 작은 데이터 순서로 정렬한 것이다.
+
+```python
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+
+X, y = make_classification(n_samples=16, n_features=2,
+                           n_informative=2, n_redundant=0,
+                           random_state=0)
+
+model = LogisticRegression().fit(X, y)
+y_hat = model.predict(X)
+f_value = model.decision_function(X)
+
+df = pd.DataFrame(np.vstack([f_value, y_hat, y]).T,
+                  columns=["f", "y_hat", "y"])
+df.sort_values("f", ascending=False).reset_index(drop=True)
+```
+
+ROC 커브는 이 표를 이용하여 다음과 같이 작성한다.
+
+1. 현재는 0을 기준값(threshold)으로 클래스를 구분하여 판별함수값이 0보다 크면 양성(Positive), 작으면 음성(negative)이 된다.
+2. 데이터 분류가 다르게 되도록 기준값을 증가 혹은 감소시킨다. 위의 표에서는 기준값을 0.244729보다 크도록 올리면 6번 데이터는 더이상 양성이 아니다.
+3. 기준값을 여러가지 방법으로 증가 혹은 감소시키면서 이를 반복하면 여러가지 다른 기준값에 대해 분류 결과가 달라지고 재현율, 위양성률 등의 성능평가 점수도 달라진다.
+
+
+
+기준값 0을 사용하여 이진 분류 결과표, 재현율, 위양성율을 계산하면 다음과 같다.
+
+```python
+confusion_matrix(y, y_hat, labels=[1, 0])
+```
+
+
+
+|               | 예측 클래스 1 | 예측 클래스 0 |
+| ------------- | ------------- | ------------- |
+| 실제 클래스 1 | 6             | 2             |
+| 실제 클래스 0 | 1             | 7             |
+
+
+
+```python
+recall = 6 / (6 + 2)
+fallout = 1 / (1 + 7)
+print("recall = ", recall)
+print("fallout = ", fallout)
+```
+
+recall = 0.75
+
+fallout = 0.125
+
+
+
+Scikit-Learn는 위 과정을 자동화한 `roc_curve` 명령을 제공한다. 인수로는 타겟 y 벡터와 판별함수 벡터(혹은 확률 벡터)를 넣고 결과로는 변화되는 기준값과 그 기준값을 사용했을 때의 재현율과 위양성률을 반환한다.
+
+```python
+from sklearn.metrics import roc_curve
+fpr, tpr, thresholds = roc_curve(y, model.decision_function(x))
+fpr, tpr, thresholds
+```
+
+
+
+`decisino_function`메서드를 제공하지 않는 모형은 `predict_proba`명령을 써서 확률을 입력해도 된다.
+
+```python
+fpr, tpr, thresholds = roc_curve(y, model.predict_proba(x)[:, 1]
+fpr, tpr, thresholds
+```
 
